@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DFT</title>
+    <link rel="stylesheet" href="style.css" type="text/css"></link>
+    <script src="script.js"></script>
+    <script src="xy.js"></script>
+    <script src="dft.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsxgraph/1.1.0/jsxgraph.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsxgraph/1.1.0/jsxgraphcore.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
+
+    <script>
+        function graph() {
+            var f, x,y, x0,y0, dx, interval;
+            // フォーム入力の取得
+            f = document.iform.f.value;
+            xmin = eval(document.iform.xmin.value);
+            xmax = eval(document.iform.xmax.value);
+            ymin = eval(document.iform.ymin.value);
+            ymax = eval(document.iform.ymax.value);
+            interval = eval(document.iform.interval.value);
+
+            // ＸＹ座標軸の設定
+            cw = 700;  ch = 220;
+            setCanvas("canvas1", "white");
+            drawLine(xmin,0, xmax,0, "black", 1);
+            drawLine(0,ymin, 0,ymax, "black", 1);
+        
+            dx = Math.PI/180*10;
+            x = xmin;
+            x0 = x;
+            y0 = eval(f);
+
+            // sin(x)
+            x = xmin;
+            x0 = x;
+            y0 = Math.sin(x0);
+            for (x=xmin+dx; x<=xmax-dx; x = x+dx) {
+                y = Math.sin(x);
+                drawLine(x0,y0, x,y, "white", 1);
+                x0 = x;
+                y0 = y;
+            }
+
+            // cos(x)
+            x = xmin;
+            x0 = x;
+            y0 = Math.cos(x0);
+            for (x=xmin+dx; x<=xmax-dx; x = x+dx) {
+                y = Math.cos(x);
+                drawLine(x0,y0, x,y, "white", 1);
+                x0 = x;
+                y0 = y;
+            }
+        
+            // f(x)
+            //　初期値設定
+            x = xmin;
+            x0 = x;
+            y0 = eval(f);
+            // ループ
+            var timerId = setInterval(function(){
+                  x = x + dx;
+                  if(x>xmax) clearInterval(timerId);
+                  y = eval(f);
+                  drawLine(x0,y0, x,y, "blue", 4);
+                  x0 = x;
+                  y0 = y;
+            }, interval);
+        }
+
+        function myChart(){
+            var ctx = document.getElementById('myChart').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+                    datasets: [{
+                        label: '周波数成分',
+                        data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        backgroundColor: "red"
+                    }]
+                }
+            });
+        }
+
+    </script>
+
+
+</head>
+<body>
+    <div class="box">
+
+        <h1>波の合成</h1>
+
+        <canvas id="canvas1" width="600" height="220" style="border:2px solid"></canvas>
+    
+        <form name="iform">
+            数式の指定<br />
+            y=f(x)=<input type="text" size="50" name="f" value="Math.sin(x)"></input><br>
+            <input type="button" value="実行" onclick="graph()"></input><br>
+            xmin=<input type="text" size="5" name="xmin" value="-Math.PI"></input>
+            xmax=<input type="text" size="5" name="xmax" value="10*Math.PI"></input>
+            ymin=<input type="text" size="1" name="ymin" value="-5"></input>
+            ymax=<input type="text" size="1" name="ymax" value="5"></input><br>
+            速度=<input type="text" size="1" name="interval" value="0">(ms)</input><br>
+        <hr>
+        </form>
+
+        <h1>周波数成分</h1>
+
+        <div class="bar">
+            <canvas id="myChart" ></canvas>
+            <div class="btn">
+                <input type="button" value="実行" onclick="myChart()"></input><br>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
